@@ -36,8 +36,8 @@ namespace ungine { namespace render {
     /*─······································································─*/
 
     int unload( const render_t& render ) {
-        if( !is_valid    ( render )){ return -1; } 
-        rl::UnloadGBuffer( render ) ; return  1;
+    //  if( !is_valid( render )) { return -1; } 
+        rl::UnloadGBuffer(render); return  1;
     }
 
 }}

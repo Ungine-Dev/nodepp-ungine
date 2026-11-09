@@ -129,7 +129,7 @@ namespace ungine { namespace matrix {
     }
 
     void unload( matrix_t matrix ){
-         if( !is_valid( matrix ) ){ return; }
+    //   if( !is_valid( matrix ) ){ return; }
          rl::UnloadTexture( matrix.texture );
          RL_FREE( matrix.data );
     }

@@ -15,24 +15,34 @@
 /*────────────────────────────────────────────────────────────────────────────*/
 
 namespace ungine { class attribute_t {
-protected: object_t storage;
-public:    attribute_t() noexcept {}
+protected: map_t<string_t,any_t> storage; public:    
+
+    attribute_t() noexcept {}
 
     /*─······································································─*/
 
     bool has_attribute   ( string_t name ) const noexcept { return storage.has(name); }
+
     void remove_attribute( string_t name ) const noexcept { storage.erase( name ); }
+
+    template< class T >
+    bool has_attribute_as( string_t name ) const noexcept { 
+    if( !has_attribute( name ) ){ return false; }
+         return sizeof(get_attribute<T>(name)[0])==sizeof(T); 
+    }
 
     /*─······································································─*/
 
-    void set_attribute( string_t name, const char* value ) const noexcept {
-         storage[ name ] = type::bind( string::to_string( value ) ); 
-    }
+    void set_attribute( string_t name, const char* value ) const noexcept { do {
+        if( !has_attribute_as<string_t>( name ) ){ break; }
+        get_attribute<string_t>( name )[0] = string_t(value); return;
+    } while(0); storage[name]= type::bind( string::to_string( value ) ); }
 
     template< class T >
-    void set_attribute( string_t name, T value ) const noexcept {
-         storage[ name ] = type::bind( value );
-    }
+    void set_attribute( string_t name, T value ) const noexcept { do {
+        if( !has_attribute_as<string_t>( name ) ){ break; }
+        get_attribute<T>( name )[0]=value; return;
+    } while(0); storage[name]= type::bind( value ); }
 
     void clear() noexcept { storage.clear(); }
 
@@ -40,9 +50,10 @@ public:    attribute_t() noexcept {}
 
     template< class T >
     ptr_t<T> get_attribute( string_t name ) const {
-        if( !storage.has( name ) ){ return nullptr; }
-        return storage[ name ].as<ptr_t<T>>();
-    }
+    if( !has_attribute_as   <T>( name ) ){ 
+        /*--*/ set_attribute<T>( name, T() );
+        return get_attribute<T>( name ); 
+    }   return storage[ name ].as<ptr_t<T>>(); }
 
 };}
 

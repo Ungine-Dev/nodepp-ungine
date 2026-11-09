@@ -30,10 +30,7 @@ namespace ungine { namespace sound {
             ext.get(), 
             (uchar) data.value().get(), 
             /*---*/ data.value .size() 
-        );
-
-        auto snd = rl::LoadSoundFromWave( wave );
-        rl::UnloadWave( wave ); return snd;
+        );  return  load( wave );
 
     } while(0); return {}; }
 
@@ -91,7 +88,7 @@ namespace ungine { namespace sound {
     /*─······································································─*/
 
     int unload( sound_t& sound ){ 
-        if( !is_valid( sound ) ){ return -1; }
+    //  if( !is_valid( sound ) ){ return -1; }
         rl::UnloadSound( sound ); return  1; 
     }
 
@@ -200,7 +197,7 @@ namespace ungine { namespace music {
     /*─······································································─*/
 
     int unload( const music_t& music ){ 
-        if( !is_valid( music ) )/*--*/{ return -1; }
+    //  if( !is_valid( music ) )/*--*/{ return -1; }
         rl::UnloadMusicStream( music ); return  1; 
     }
 

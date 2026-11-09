@@ -67,7 +67,7 @@ namespace ungine { namespace image {
     /*─······································································─*/
 
     int unload( const image_t& image ) {
-        if( !is_valid( image ) ){ return -1; }
+    //  if( !is_valid( image ) ){ return -1; }
         rl::UnloadImage( image ); return  1;
     }
 

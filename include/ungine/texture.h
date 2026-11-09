@@ -38,8 +38,7 @@ namespace ungine { namespace texture {
             /*-----*/ data.value .size() 
         );
 
-        auto txt = rl::LoadTextureFromImage( img );
-        rl::UnloadImage( img ); return txt;
+        return load( img );
 
     } while(0); return texture_t(); }
 
@@ -80,7 +79,7 @@ namespace ungine { namespace texture {
     /*─······································································─*/
 
     int unload( const texture_t& texture ){ 
-        if( !is_valid( texture ) )  { return -1; }
+    //  if( !is_valid( texture ) )  { return -1; }
         rl::UnloadTexture( texture ); return  1; 
     }
 

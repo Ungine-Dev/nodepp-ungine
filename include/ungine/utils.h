@@ -89,21 +89,15 @@ void BeginTextureMode( GBufferRenderTexture target, int layer ) {
 
 namespace ungine { namespace rl {     
 bool IsGBufferValid( GBufferRenderTexture target ) {
-
-    if( target.id == 0 ) /*--------------*/ { return false; }
     if( !IsTextureValid( target.albedo   ) ){ return false; }
     if( !IsTextureValid( target.position ) ){ return false; }
-
-return true; }
-}}
+return true; } }}
 
 /*────────────────────────────────────────────────────────────────────────────*/
 
 namespace ungine { namespace rl {     
 void UnloadGBuffer( const GBufferRenderTexture& target ) {
 
-    if( target.id == 0 ){ return; }
- 
     if( IsTextureValid ( target.albedo      )  )
       { rlUnloadTexture( target.albedo  .id ); }
     if( IsTextureValid ( target.position    )  )
@@ -140,7 +134,7 @@ GBufferRenderTexture LoadGBuffer( int width, int height, int depth ) {
             width, height * depth, 1, 19
         });
 
-        rlActiveDrawBuffers(1);
+    //  rlActiveDrawBuffers(1);
         
         rlFramebufferAttach(target.id, target.albedo  .id, RL_ATTACHMENT_COLOR_CHANNEL0, RL_ATTACHMENT_TEXTURE2D   , 0);
         rlFramebufferAttach(target.id, target.position.id, RL_ATTACHMENT_DEPTH         , RL_ATTACHMENT_RENDERBUFFER, 0);
@@ -149,7 +143,7 @@ GBufferRenderTexture LoadGBuffer( int width, int height, int depth ) {
         TRACELOG(LOG_INFO, "FBO: [ID %i] Framebuffer object created successfully", target.id);
     }
 
-        rlDisableFramebuffer();
+    //  rlDisableFramebuffer();
     } else { TRACELOG(LOG_WARNING, "FBO: Framebuffer object can not be created"); }
 
     return target;
@@ -180,8 +174,7 @@ namespace ungine { namespace rl {
             memcpy( mesh.indices  , indices   , mesh.triangleCount* 3* sizeof(ushort)); 
         } else { mesh.indices = nullptr; }
 
-        UploadMesh( &mesh, false ); 
-        return mesh;
+        UploadMesh( &mesh, false ); return mesh;
 
     }
 

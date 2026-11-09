@@ -37,7 +37,7 @@ namespace ungine { namespace engine {
     return out; }
 
     shader_t& get_default_model_shader() {
-    static shader_t out = shader::load( 
+    static shader_t out = shader::load(
         kernel::vs_default_kernel(), 
         kernel::fs_default_kernel(),
         kernel::vs_main_kernel   (),
@@ -85,26 +85,29 @@ namespace ungine { namespace engine {
 
         rl::InitWindow( width, height, title.get() );
         rl::rlSetClipPlanes( 0.1, 500 );
-        rl::InitAudioDevice();
     //  rl::SetExitKey(0);
+        
+        #if NODEPP_KERNEL != NODEPP_KERNEL_WASM
+        rl::InitAudioDevice();
+        #endif
 
         process::add( coroutine::add( COROUTINE(){
         coBegin; coWait( !rl::IsWindowReady() ); onOpen.emit(); 
             
-            while( !should_close() ){ 
-            do{if( !is_ready    () ){ break; }
+            while(!should_close() ){ 
+            while( is_ready    () ){
 
                 onLoop.emit( get_delta() );
                 onNext.emit( /*-------*/ );
                 onDraw.emit( /*-------*/ );
                 get_time()+= get_delta()  ;
 
-            } while(0); 
-            
+            coNext; } do {
+
                 if  ( !onDestructor .empty() ){ onDestructor .emit(); } 
                 elif( !onConstructor.empty() ){ onConstructor.emit(); }
             
-            coNext; } close();
+            coDelay(10); } while(0); } close();
 
         coFinish }));
 

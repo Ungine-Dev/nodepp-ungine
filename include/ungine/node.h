@@ -31,10 +31,10 @@ public:
 
 protected:
 
-    struct NODE { bool exists=false; 
-        uchar_64 self, root, parent;
-        array_t<ptr_t<task_t>>   task;
-        map_t<string_t,uchar_64> node;
+    struct NODE { bool exists= false; 
+        uchar_64  parent, self, root;
+        array_t<ptr_t<task_t>>  task;
+        map_t<string_t,uchar_64>node;
     };  ptr_t<NODE> obj;
 
     handler_t<node_t>& node_handler() const noexcept { static handler_t<node_t> out; return out; }
@@ -57,14 +57,14 @@ protected:
 public:
 
    ~node_t() noexcept { if( obj.count()>1 ){ return; } free(); }
-    node_t() noexcept : obj( new NODE() ), attribute_t() {}
+    node_t() noexcept : obj( 0UL ), attribute_t() {}
 
     /*─······································································─*/
 
-    node_t( function_t<void,ptr_t<node_t>> cb ) noexcept : obj( new NODE() ), attribute_t() {
+    node_t( function_t<void,ptr_t<node_t>> cb ) noexcept : obj( 0UL ), attribute_t() {
 
         auto mem  = node_handler(); auto hdl= mem.create(); obj->exists=true;
-        mem.update( hdl, *this ); obj->self = hdl; obj->root = hdl;
+        mem.write ( hdl, *this ); obj->self = hdl; obj->root = hdl;
         auto self = mem.read( obj->self );
 
         engine::onConstructor.once([=](){ if( self->exists() ){ cb(self); } });
@@ -220,29 +220,28 @@ public:
     void remove() const noexcept { free(); }
     void   free() const noexcept { if( !exists() ){ return; }
 
-        auto self   = type::bind( this ); obj->exists=false; 
-        clear_children(); onClose.emit(); 
+        auto self = type::bind( this ); obj->exists=false; 
 
         if( get_parent() && has_attribute("name") ){ 
-            auto name = get_attribute<string_t>("name");
+        auto name=get_attribute<string_t>("name");
             get_parent()->obj->node.erase( name[0] ); 
-        }
+        }   clear_children();
 
         engine::onDestructor.once([=](){
 
-            self->node_handler().remove( self->obj->self );
-
-            /*-------------------*/ self->onNext .clear();
+            self->onClose .emit (); self->onNext .clear();
             self->onLoop  .clear(); self->onDraw .clear();
             self->onUI    .clear(); self->onUUI  .clear();
             self->on2D    .clear(); self->onU2D  .clear();
             self->on3D    .clear(); self->onU3D  .clear();
             self->onSignal.clear(); self->onClose.clear();
-            
-            engine::onClose.off( self->obj->task[0] ); 
-            engine::onLoop .off( self->obj->task[1] ); 
-            engine::onNext .off( self->obj->task[2] ); 
-            engine::onDraw .off( self->obj->task[3] ); 
+
+            self->node_handler().remove( self->obj->self );
+
+            engine::onLoop .off( self->obj->task[0] ); 
+            engine::onNext .off( self->obj->task[1] ); 
+            engine::onDraw .off( self->obj->task[2] ); 
+            engine::onClose.off( self->obj->task[3] ); 
             
             self->obj->parent = 0ULL;
             self->obj->self   = 0ULL;

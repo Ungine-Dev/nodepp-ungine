@@ -5,54 +5,38 @@
 
 using namespace nodepp;
 
-/*────────────────────────────────────────────────────────────────────────────*/
-
 namespace ungine { node_t main() {
 return node::node_scene([=]( ptr_t<node_t> self ){
 
-    self->on2D([=](){ rl::DrawFPS ( 10 , 10 ); });
-    self->on3D([=](){ rl::DrawGrid( 100, 10 ); });
-    self->get_viewport()->background = color::hex( "222222" );
+    auto img = texture  ::load( "./test/emoji.png" );
+    auto mdl = model    ::load( "./test/map.glb" );
+    auto ply = model    ::load( "./test/player.glb" );
+    auto ann = animation::load( "./test/player.glb" );
 
-    self->append_child( node::node_fly_camera_3D([=]( ptr_t<node_t> self ){
-        auto pos = self->get_attribute<transform_3D_t>( "transform" );
-        pos->position = vec3_t({ 0, 0, -20 });
-        cursor::lock();
-    }) );
-
-    self->append_child( node::node_3D([=]( ptr_t<node_t> self ){
-
-        self->append_child( node::node_cube([=]( ptr_t<node_t> self ){
-            auto pos = self->get_attribute<transform_3D_t>( "transform" );
-            auto shp = self->get_attribute<shape_3D_t>    ( "shape"     );
-
-            auto shd = shader::load_material_shader( nullptr,
-            NODEPP_STRINGIFY( material_t onMain( material_t mat, int layer ){
-                   mat.result = vec4( 1., 0., 0., 1. );
-            return mat; }));
-            
-                 pos->position = vec3_t({ 0, 3, 0 });
-                 pos->scale    = vec3_t({ 1, 1, 1 });
-                 shp->model.materials[0].shader = shd;
-
-            self->onClose([=](){ shader::unload(shd); });
-        }));
-
-        self->append_child( node::node_cube([=]( ptr_t<node_t> self ){
-            auto pos = self->get_attribute<transform_3D_t>( "transform" );
-                 pos->position = vec3_t({  0, 0,  0 });
-                 pos->scale    = vec3_t({ 30,.1, 30 });
-        }));
-
-    }));
+    self->onClose([=](){ 
+        texture  ::unload(img); 
+        model    ::unload(mdl); 
+        model    ::unload(ply); 
+        animation::unload(ann);
+    });
 
 }); }}
 
 /*────────────────────────────────────────────────────────────────────────────*/
 
 void onMain(){
+
     ungine::engine::start  ( 800, 600, "MyGame" );
-    ungine::engine::set_fps( 60 ); ungine::main();
+    ungine::engine::set_fps( 60 ); 
+    
+    ptr_t<ungine::node_t> node (0UL);
+
+    process::add( coroutine::add( COROUTINE(){
+    coBegin; coDelay(10); do {
+        node[0].free();
+        node[0] = ungine::main();
+    } while(0); coGoto(0); coFinish }));
+    
 }
 
 /*────────────────────────────────────────────────────────────────────────────*/

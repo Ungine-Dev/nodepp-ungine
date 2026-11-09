@@ -151,9 +151,9 @@ namespace ungine { namespace model {
     /*─······································································─*/
 
     int unload( const model_t& mdl ){ 
-        if ( !is_valid ( mdl ) ){ return -1; }
-        rl::UnloadModel( mdl );   
-    return 1; }
+    //  if( !is_valid( mdl ) ){ return -1; }
+        rl::UnloadModel( mdl ); return  1; 
+    }
 
 }}
 

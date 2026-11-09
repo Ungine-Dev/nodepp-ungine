@@ -78,7 +78,7 @@ namespace ungine { namespace shader {
     /*─······································································─*/
 
     int unload( const shader_t& shader ){ 
-        if( !is_valid( shader ) ) { return -1; }
+    //  if( !is_valid( shader ) ) { return -1; }
         rl::UnloadShader( shader ); return  1; 
     }
 

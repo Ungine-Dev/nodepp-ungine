@@ -112,7 +112,7 @@ namespace ungine { namespace mesh {
     /*─······································································─*/
 
     int unload( const model_t& model ){ 
-        if( !is_valid( model ) ){ return -1; }
+    //  if( !is_valid( model ) ){ return -1; }
         rl::UnloadModel( model ); return  1; 
     }
 
